@@ -65,13 +65,13 @@ void MS5xxx::ReadProm() {
 
 unsigned int MS5xxx::Calc_CRC4(unsigned char poly)
 {
-    int cnt;                   			// simple counter
+    int cnt;                   		// simple counter
     unsigned int n_rem;                 // CRC remainder
     unsigned int crc_read;              // original value of the CRC
     unsigned int l_pol = poly;
     unsigned char n_bit;
 
-    l_pol = ( l_pol << 8 ) & 0xf000;	// check bit positioning and endianness !
+    l_pol = ( l_pol << 8 ) & 0xf000;	// shift bits and apply mask
     n_rem = 0x0000;
 
     crc_read = C[ 7 ];                  // save read RCR
@@ -79,7 +79,7 @@ unsigned int MS5xxx::Calc_CRC4(unsigned char poly)
     for ( cnt = 0; cnt < 16; cnt++ )    // operation is performed on bytes
     {// choose LSB or MSB
         if ( cnt % 2 == 1 ) n_rem ^= ( unsigned short ) ( ( C[ cnt >> 1 ] ) & 0x00FF );
-        else n_rem ^= ( unsigned short ) ( ( C[ cnt >> 1 ] >> 8) & 0x00FF ); // this mask should'n change anything...
+        else n_rem ^= ( unsigned short ) ( ( C[ cnt >> 1 ] >> 8) & 0x00FF );
 
         for ( n_bit = 8; n_bit > 0; n_bit-- )
         {
@@ -94,8 +94,8 @@ unsigned int MS5xxx::Calc_CRC4(unsigned char poly)
         }
     }
     C[ 7 ] = crc_read;
-	n_rem = (0x000F & (n_rem >> 12)); // final 4-bit remainder is CRC code
-	return n_rem;
+    n_rem = (0x000F & (n_rem >> 12)); // final 4-bit remainder is CRC code
+    return n_rem;
 }
 
 unsigned int MS5xxx::Read_CRC4()
