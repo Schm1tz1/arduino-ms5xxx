@@ -54,7 +54,7 @@ void MS5xxx::ReadProm() {
 	    send_cmd(MS5xxx_CMD_PROM_RD+2*i);
 	    _Wire->requestFrom(i2caddr, 2);
 
-	    char c = _Wire->read();
+	    unsigned int c = _Wire->read();
 	    C[i] = (c << 8);
 	    c = _Wire->read();
 	    C[i] += c;
@@ -65,24 +65,26 @@ void MS5xxx::ReadProm() {
 
 unsigned int MS5xxx::Calc_CRC4(unsigned char poly)
 {
-    unsigned int cnt;                            // simple counter
+    int cnt;                   			// simple counter
     unsigned int n_rem;                 // CRC remainder
     unsigned int crc_read;              // original value of the CRC
     unsigned int l_pol = poly;
-    l_pol = ( l_pol << 12 ) & 0xf000;
     unsigned char n_bit;
+
+    l_pol = ( l_pol << 8 ) & 0xf000;	// check bit positioning and endianness !
     n_rem = 0x0000;
+
     crc_read = C[ 7 ];                  // save read RCR
     C[ 7 ] = ( 0xFF00 & ( C[ 7 ] ) );   // CRC byte is replaced by 0
     for ( cnt = 0; cnt < 16; cnt++ )    // operation is performed on bytes
     {// choose LSB or MSB
         if ( cnt % 2 == 1 ) n_rem ^= ( unsigned short ) ( ( C[ cnt >> 1 ] ) & 0x00FF );
-        else n_rem ^= ( unsigned short ) ( ( C[ cnt >> 1 ] >> 8) & 0x00FF );
+        else n_rem ^= ( unsigned short ) ( ( C[ cnt >> 1 ] >> 8) & 0x00FF ); // this mask should'n change anything...
+
         for ( n_bit = 8; n_bit > 0; n_bit-- )
         {
             if ( n_rem & ( 0x8000 ) )
             {
-                //n_rem = ( n_rem << 1 ) ^ 0x3000;
             	n_rem = ( n_rem << 1 ) ^ l_pol;
             }
             else
@@ -92,9 +94,8 @@ unsigned int MS5xxx::Calc_CRC4(unsigned char poly)
         }
     }
     C[ 7 ] = crc_read;
-
-    n_rem = ( n_rem >> 12 );            // final 4-bit remainder is CRC code
-    return ( n_rem & 0x00FF );
+	n_rem = (0x000F & (n_rem >> 12)); // final 4-bit remainder is CRC code
+	return n_rem;
 }
 
 unsigned int MS5xxx::Read_CRC4()
@@ -186,3 +187,14 @@ double MS5xxx::GetTemp() {
 double MS5xxx::GetPres() {
 	return P;
 }
+
+unsigned char MS5xxx::CRCcodeTest(){
+	unsigned int nprom[] = {0x3132,0x3334,0x3536,0x3738,0x3940,0x4142,0x4344,0x4500}; //expected output is 0xB
+	for(uint8_t i=0;i<8;i++) {
+		C[i] = nprom[i];
+	}
+	unsigned char crc = Calc_CRC4(); //expected output is 0xB
+	ReadProm();
+	return crc;
+}
+
