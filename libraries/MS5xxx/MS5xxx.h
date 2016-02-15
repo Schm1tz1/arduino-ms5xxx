@@ -62,7 +62,7 @@ class MS5xxx
 
     unsigned int Calc_CRC4(unsigned char poly=0x30);
     unsigned int Read_CRC4();
-	unsigned char CRCcodeTest();
+    unsigned char CRCcodeTest();
 
     unsigned int Read_C(unsigned int index);
     
