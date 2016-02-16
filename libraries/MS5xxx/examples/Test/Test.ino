@@ -36,9 +36,25 @@ void setup() {
 void loop() {
   sensor.ReadProm();
   sensor.Readout();
-  Serial.print(sensor.GetTemp());
-  Serial.print(";");
-  Serial.print(sensor.GetPres());
-  Serial.print("\n");
-  delay(300);
+  Serial.print("Temperature [0.01 C]: ");
+  Serial.println(sensor.GetTemp());
+  Serial.print("Pressure [Pa]: ");
+  Serial.println(sensor.GetPres());
+  test_crc();
+  Serial.println("---");
+  delay(500);
 }
+
+void test_crc() {
+  sensor.ReadProm();
+  sensor.Readout(); 
+  Serial.print("CRC=0x");
+  Serial.print(sensor.Calc_CRC4(), HEX);
+    Serial.print(" (should be 0x");
+  Serial.print(sensor.Read_CRC4(), HEX);
+  Serial.print(")\n");
+  Serial.print("Test Code CRC=0x");
+  Serial.print(sensor.CRCcodeTest(), HEX);
+  Serial.println(" (should be 0xB)");
+}
+
