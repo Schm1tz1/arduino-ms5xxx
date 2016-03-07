@@ -7,4 +7,5 @@ Note the different I2C-addresses, calculations and correction functions between 
 The examples nicely show how to use this library with the standard MS5xxx-class. For usage with MS5611 chips just use the class MS5611 in the same way.
 "Standard units" are Pascals for pressure and 0.01 °C for temperature as calculations are done exactly as shown in the manufacturers datasheet.
 
-<a href="http://dx.doi.org/10.5281/zenodo.11966"><img src="https://zenodo.org/badge/6485/Schm1tz1/arduino-ms5xxx.png"><a>
+[![DOI](https://zenodo.org/badge/doi/10.5281/zenodo.47085.svg)](http://dx.doi.org/10.5281/zenodo.47085)
+
