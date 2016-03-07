@@ -44,7 +44,7 @@
 
 class MS5xxx
 {
-  private:
+  protected:
 	unsigned int C[8];
 	double P;
 	double TEMP;
