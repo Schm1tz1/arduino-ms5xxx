@@ -58,7 +58,6 @@ void MS5xxx::ReadProm() {
 	    C[i] = (c << 8);
 	    c = _Wire->read();
 	    C[i] += c;
-	    _Wire->endTransmission(true);
 	}
 	
 }
@@ -140,7 +139,6 @@ unsigned long MS5xxx::read_adc(unsigned char aCMD)
   value += (c<<8);
   c = _Wire->read();
   value += c;
-  _Wire->endTransmission(true);
  
   return value;
 }
