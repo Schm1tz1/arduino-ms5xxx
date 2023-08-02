@@ -144,21 +144,21 @@ unsigned long MS5xxx::read_adc(unsigned char aCMD)
 }
 
 void MS5xxx::Readout() {
-	unsigned long D1=0, D2=0;
+	unsigned long l_D1=0, l_D2=0;
 	
 	double dT;
 	double OFF;
 	double SENS;
 
-	D2=read_adc(MS5xxx_CMD_ADC_D2+MS5xxx_CMD_ADC_4096);
-	D1=read_adc(MS5xxx_CMD_ADC_D1+MS5xxx_CMD_ADC_4096);
+	l_D2 = read_adc(MS5xxx_CMD_ADC_D2+MS5xxx_CMD_ADC_4096);
+  	l_D1 = read_adc(MS5xxx_CMD_ADC_D1+MS5xxx_CMD_ADC_4096);
 
 	// calculate 1st order pressure and temperature (MS5607 1st order algorithm)
-	dT=D2-C[5]*pow(2,8);
+	dT=l_D2-C[5]*pow(2,8);
 	OFF=C[2]*pow(2,17)+dT*C[4]/pow(2,6);
 	SENS=C[1]*pow(2,16)+dT*C[3]/pow(2,7);
 	TEMP=(2000+(dT*C[6])/pow(2,23));
-	P=(((D1*SENS)/pow(2,21)-OFF)/pow(2,15));
+	P=(((l_D1*SENS)/pow(2,21)-OFF)/pow(2,15));
 	 
 	// perform higher order corrections
 	double T2=0., OFF2=0., SENS2=0.;
@@ -175,7 +175,7 @@ void MS5xxx::Readout() {
 	TEMP-=T2;
 	OFF-=OFF2;
 	SENS-=SENS2;
-	P=(((D1*SENS)/pow(2,21)-OFF)/pow(2,15));	
+	P=(((l_D1*SENS)/pow(2,21)-OFF)/pow(2,15));	
 }
 
 double MS5xxx::GetTemp() {
